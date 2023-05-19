@@ -1,0 +1,8 @@
+FROM alpine:latest as base
+RUN apk add --no-cache dash
+FROM public.ecr.aws/aws-observability/aws-otel-collector:latest as adot
+COPY debug-otel-config.yaml /etc/ecs/debug-otel-config.yaml 
+COPY --from=base /usr/bin/dash /usr/bin/dash
+CMD ["--config=/etc/ecs/debug-otel-config.yaml"]
+
+

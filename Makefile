@@ -32,7 +32,8 @@ LDFLAGS=-ldflags "-s -w -X $(BUILD_INFO_IMPORT_PATH).GitHash=$(GIT_SHA) \
 
 GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
-DOCKER_NAMESPACE=amazon
+#DOCKER_NAMESPACE=amazon
+DOCKER_NAMESPACE="476146385463.dkr.ecr.us-east-1.amazonaws.com/pbsorg-adot"
 COMPONENT=awscollector
 TOOLS_MOD_DIR := $(abspath ./tools/workflow/linters)
 TOOLS_BIN_DIR := $(abspath ./bin)
