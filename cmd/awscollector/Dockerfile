@@ -2,6 +2,7 @@
 # stage will be skipped and vice versa. The build mode builds the binary from the source files, while
 # the copy mode copies in a pre-built binary.
 ARG BUILDMODE=build
+ARG CONFIG_FILE
 
 ################################
 #	Certificate Stage      #
@@ -77,5 +78,5 @@ ENV RUN_IN_CONTAINER="True"
 # aws-sdk-go needs $HOME to look up shared credentials
 ENV HOME=/root
 ENTRYPOINT ["/awscollector"]
-CMD ["--config=/etc/otel-config.yaml"]
+CMD [${CONFIG_FILE}]
 EXPOSE 4317 55681 2000

@@ -119,7 +119,7 @@ package-deb: build
 
 .PHONY: docker-build
 docker-build: amd64-build amd64-build-healthcheck
-	docker buildx build --platform linux/amd64 --build-arg BUILDMODE=copy --load -t $(DOCKER_NAMESPACE)/$(COMPONENT):$(VERSION) -f ./cmd/$(COMPONENT)/Dockerfile .
+	docker buildx build --platform linux/amd64 --build-arg BUILDMODE=copy --build-arg CONFIG_FILE=$(CONFIG_FILE) --load -t $(DOCKER_NAMESPACE)/$(COMPONENT):$(VERSION) -f ./cmd/$(COMPONENT)/Dockerfile .
 
 .PHONY: amd64-build-healthcheck
 amd64-build-healthcheck: install-tools golint
