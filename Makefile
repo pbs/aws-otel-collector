@@ -1,6 +1,6 @@
 include ./Makefile.Common
 
-VERSION := $(shell cat VERSION)
+VERSION := $(shell git rev-parse HEAD)
 PROJECTNAME := $(shell basename "$(PWD)")
 
 GIT_SHA=$(shell git rev-parse HEAD)
@@ -33,7 +33,7 @@ LDFLAGS=-ldflags "-s -w -X $(BUILD_INFO_IMPORT_PATH).GitHash=$(GIT_SHA) \
 GOOS=$(shell go env GOOS)
 GOARCH=$(shell go env GOARCH)
 #DOCKER_NAMESPACE=amazon
-DOCKER_NAMESPACE="476146385463.dkr.ecr.us-east-1.amazonaws.com/pbsorg-adot"
+DOCKER_IMAGE_TAG="476146385463.dkr.ecr.us-east-1.amazonaws.com/pbsorg-adot"
 COMPONENT=awscollector
 TOOLS_MOD_DIR := $(abspath ./tools/workflow/linters)
 TOOLS_BIN_DIR := $(abspath ./bin)
@@ -119,7 +119,7 @@ package-deb: build
 
 .PHONY: docker-build
 docker-build: amd64-build amd64-build-healthcheck
-	docker buildx build --platform linux/amd64 --build-arg BUILDMODE=copy --build-arg CONFIG_FILE=$(CONFIG_FILE) --load -t $(DOCKER_NAMESPACE)/$(COMPONENT):$(VERSION) -f ./cmd/$(COMPONENT)/Dockerfile .
+	docker buildx build --platform linux/amd64 --build-arg BUILDMODE=copy --build-arg CONFIG_FILE=$(CONFIG_FILE) --load -t $(DOCKER_IMAGE_TAG):$(VERSION) -f ./cmd/$(COMPONENT)/Dockerfile .
 
 .PHONY: amd64-build-healthcheck
 amd64-build-healthcheck: install-tools golint
@@ -127,7 +127,7 @@ amd64-build-healthcheck: install-tools golint
 
 .PHONY: docker-build-arm
 docker-build-arm: arm64-build arm64-build-healthcheck
-	docker buildx build --platform linux/arm64 --build-arg BUILDMODE=copy --load -t $(DOCKER_NAMESPACE)/$(COMPONENT):$(VERSION) -f ./cmd/$(COMPONENT)/Dockerfile .
+	docker buildx build --platform linux/arm64 --build-arg BUILDMODE=copy --load -t $(DOCKER_IMAGE_TAG):$(VERSION) -f ./cmd/$(COMPONENT)/Dockerfile .
 
 .PHONY: arm64-build-healthcheck
 arm64-build-healthcheck: install-tools golint
@@ -139,13 +139,13 @@ windows-build-healthcheck: install-tools golint
 
 .PHONY: docker-push
 docker-push:
-	docker push $(DOCKER_NAMESPACE)/$(COMPONENT):$(VERSION)
+	docker push $(DOCKER_IMAGE_TAG):$(VERSION)
 
 .PHONY: docker-run
 docker-run:
 	docker run --rm -p 4317:4317 -p 55679:55679 -p 8889:8888 \
             -v "${PWD}/config.yaml":/otel-local-config.yaml \
-            --name awscollector $(DOCKER_NAMESPACE)/$(COMPONENT):$(VERSION) \
+            --name awscollector $(DOCKER_IMAGE_TAG):$(VERSION) \
             --config otel-local-config.yaml; \
 
 .PHONY: docker-compose
