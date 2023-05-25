@@ -12,7 +12,13 @@ receivers:
         endpoint: 0.0.0.0:4318
         tls:
           insecure: true
- 
+  awsxray:
+    endpoint: 0.0.0.0:2000
+    transport: udp
+  statsd:
+    endpoint: 0.0.0.0:8125
+    aggregation_interval: 60s
+
 processors:
   batch/traces:
     timeout: 1s
@@ -95,11 +101,11 @@ exporters:
 service:
   pipelines:
     traces:
-      receivers: [otlp]
+      receivers: [otlp,awsxray]
       processors: [resourcedetection, batch/traces]
       exporters: [logging,awsxray]
     metrics/application:
-      receivers: [otlp]
+      receivers: [otlp, statsd]
       processors: [resourcedetection, resource, batch/metrics]
       exporters: [logging,awsemf/application]
 
